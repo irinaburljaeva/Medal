@@ -86,7 +86,8 @@
 }
 
 .suitcase-container.revealed #suitcase {
-  opacity: 0; transform: scale(1.2);
+  opacity: 0;
+  transform: scale(1.2);
 }
 .suitcase-container.revealed .smoke span {
   animation-play-state: running;
@@ -109,8 +110,7 @@
 <body>  <h2>Кажется в вашем чемодане что-то появилось! Нажмите на него, чтобы посмотреть, что это!</h2>  <div class="suitcase-container" id="box">
     <img src="suitcase.png" id="suitcase" alt="Чемодан">
     <div class="smoke">
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
     <img src="medal.png" id="medal" alt="Медаль">
   </div>  <script>
@@ -118,7 +118,6 @@
     const medal = document.getElementById('medal');
     let musicStarted = false;
 
-    // Синтезаторы Tone.js
     const arp = new Tone.PolySynth(Tone.Synth, { oscillator:{type:'triangle'}, envelope:{attack:0.1,decay:0.1,sustain:0.5,release:1} }).toDestination();
     const fanfare = new Tone.PolySynth(Tone.Synth, { oscillator:{type:'square'}, envelope:{attack:0.01,decay:0.2,sustain:0.3,release:1.5} }).toDestination();
 
@@ -134,11 +133,10 @@
 
     box.addEventListener('click', () => {
       if (!musicStarted) { startMusic(); musicStarted = true; }
-      // тряска чемодана
       box.classList.add('shake');
       setTimeout(() => box.classList.remove('shake'), 400);
-      // показать дым и исчезнуть чемодан
-      box.classList.add('revealed');
+      setTimeout(() => box.classList.add('revealed'), 600);
+      setTimeout(() => Tone.Transport.stop(), 1200);
     });
 
     medal.addEventListener('click', e => {
