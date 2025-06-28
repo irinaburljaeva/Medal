@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html><html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>Сюрприз с медалью</title>
@@ -8,114 +7,103 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <style>
     body {
-      margin: 0; padding: 2rem;
-      background: #fafafa;
-      display: flex; flex-direction: column; align-items: center;
-      font-family: sans-serif; text-align: center;
+      margin:0; padding:2rem;
+      background:#fafafa;
+      font-family:sans-serif;
+      text-align:center;
     }
-    h2 { margin-bottom: 1.5rem; color: #333; }
+    h2 {
+      margin-bottom:1.5rem;
+      color:#333;
+    }.suitcase-container {
+  position: relative;
+  width: 300px; height: auto;
+  perspective: 800px;
+  cursor: pointer;
+}
+#suitcase {
+  width: 100%;
+  transition: transform 0.4s ease;
+  transform-origin: center bottom;
+}
+.suitcase-container.shake #suitcase {
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0) rotate(0deg); }
+  25%      { transform: translateX(4px) rotate(2deg); }
+  50%      { transform: translateX(-4px) rotate(-2deg); }
+  75%      { transform: translateX(4px) rotate(1deg); }
+}
 
-    .suitcase-container {
-      position: relative;
-      width: 300px; height: 200px;
-      perspective: 800px;
-      cursor: pointer;
-    }
-    /* чемодан */
-    #suitcase {
-      width: 100%; transform-origin: center bottom;
-      transition: transform 0.4s ease;
-    }
-    /* тряска */
-    .shake #suitcase {
-      animation: shake 0.4s;
-    }
-    @keyframes shake {
-      0%,100% { transform: translateX(0) rotate(0deg); }
-      25%      { transform: translateX(4px) rotate(2deg); }
-      50%      { transform: translateX(-4px) rotate(-2deg); }
-      75%      { transform: translateX(4px) rotate(1deg); }
-    }
+.smoke {
+  position: absolute;
+  left: 50%; bottom: 10px;
+  width: 0; height: 0;
+  pointer-events: none;
+}
+.smoke span {
+  position: absolute; bottom: 0;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.7);
+  transform: translateX(-50%) scale(0);
+  opacity: 0;
+  animation: smokeAnim 1s ease-out forwards;
+}
+.smoke span:nth-child(1){ left:10%; animation-delay:0s; }
+.smoke span:nth-child(2){ left:30%; animation-delay:0.1s; }
+.smoke span:nth-child(3){ left:50%; animation-delay:0.2s; }
+.smoke span:nth-child(4){ left:70%; animation-delay:0.3s; }
+.smoke span:nth-child(5){ left:90%; animation-delay:0.4s; }
+@keyframes smokeAnim {
+  0%   { transform: translateX(-50%) scale(0.5); opacity: 0.7; filter: blur(2px); }
+  100% { transform: translateX(-50%) translateY(-150px) scale(1.5); opacity: 0; filter: blur(10px); }
+}
 
-    /* дым */
-    .smoke {
-      position: absolute; left: 50%; bottom: 10px;
-      width: 0; height: 0; pointer-events: none;
-    }
-    .smoke span {
-      position: absolute; bottom: 0;
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      background: rgba(200,200,200,0.7);
-      transform: translateX(-50%) scale(0);
-      opacity: 0;
-      animation: smokeAnim 1s ease-out forwards;
-    }
-    .smoke span:nth-child(1){ left:10%; animation-delay:0s; }
-    .smoke span:nth-child(2){ left:30%; animation-delay:0.1s; }
-    .smoke span:nth-child(3){ left:50%; animation-delay:0.2s; }
-    .smoke span:nth-child(4){ left:70%; animation-delay:0.3s; }
-    .smoke span:nth-child(5){ left:90%; animation-delay:0.4s; }
-    @keyframes smokeAnim {
-      0%   { transform: translateX(-50%) scale(0.5); opacity: 0.6; filter: blur(2px); }
-      100% { transform: translateX(-50%) translateY(-150px) scale(1.5); opacity: 0; filter: blur(10px); }
-    }
+#medal {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 120px; height: 120px;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: opacity 0.6s ease 1.2s, transform 0.6s ease 1.2s;
+  cursor: pointer;
+}
+.suitcase-container.revealed #suitcase,
+.suitcase-container.revealed .smoke {
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.suitcase-container.revealed #medal {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: pulse 2s infinite, spin 4s linear infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: translate(-50%,-50%) scale(1); }
+  50%     { transform: translate(-50%,-50%) scale(1.1); }
+}
+@keyframes spin {
+  to { transform: translate(-50%,-50%) rotate(360deg) scale(1); }
+}
 
-    /* медаль */
-    #medal {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 120px; height: 120px;
-      transform: translate(-50%, -50%) scale(0);
-      opacity: 0;
-      transition: transform 0.6s ease 1.2s, opacity 0.6s ease 1.2s;
-      cursor: pointer;
-    }
-
-    .revealed .smoke,
-    .revealed #suitcase {
-      opacity: 0; transition: opacity 0.4s ease;
-    }
-    .revealed #medal {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-      animation: pulse 2s infinite, spin 4s linear infinite;
-    }
-    @keyframes pulse {
-      0%,100% { transform: translate(-50%,-50%) scale(1); }
-      50%     { transform: translate(-50%,-50%) scale(1.1); }
-    }
-    @keyframes spin {
-      to { transform: translate(-50%,-50%) rotate(360deg) scale(1); }
-    }
   </style>
 </head>
-<body>
-
-  <h2>Кликни по чемодану, чтобы увидеть медаль!</h2>
-
-  <div class="suitcase-container" id="box">
+<body>  <h2>Кажется в вашем чемодане что-то появилось! Нажмите на него, чтобы посмотреть, что это!</h2>  <div class="suitcase-container" id="box">
     <img src="suitcase.png" id="suitcase" alt="Чемодан">
     <div class="smoke">
       <span></span><span></span><span></span><span></span><span></span>
     </div>
     <img src="medal.png" id="medal" alt="Медаль">
-  </div>
-
-  <script>
+  </div>  <script>
     const box = document.getElementById('box');
     const suitcase = document.getElementById('suitcase');
     const medal = document.getElementById('medal');
 
     box.addEventListener('click', () => {
-      // тряска
       box.classList.add('shake');
       setTimeout(() => box.classList.remove('shake'), 400);
-      // дым
-      box.querySelectorAll('.smoke span').forEach(el => {
-        el.style.animationPlayState = 'running';
-      });
-      // показать медаль
+      box.querySelectorAll('.smoke span').forEach(el => el.style.animationPlayState = 'running');
       setTimeout(() => box.classList.add('revealed'), 1200);
     });
 
@@ -124,7 +112,5 @@
       confetti({ particleCount: 150, spread: 80, origin: { y: 0.4 } });
       alert('👏 Поздравляем с медалью!');
     });
-  </script>
-
-</body>
+  </script></body>
 </html>
