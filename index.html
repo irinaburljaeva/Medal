@@ -29,7 +29,7 @@
     }
     #suitcase {
       width: 100%;
-      transition: transform 0.4s ease;
+      transition: transform 0.4s ease, opacity 0.6s ease;
     }
     .suitcase-container.shake #suitcase {
       animation: shake 0.4s;
@@ -39,31 +39,6 @@
       25% { transform: translateX(4px) rotate(2deg); }
       50% { transform: translateX(-4px) rotate(-2deg); }
       75% { transform: translateX(4px) rotate(1deg); }
-    }
-
-    /* CSS-дымовая анимация */
-    .smoke {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-    }
-    .smoke span {
-      position: absolute;
-      bottom: 0;
-      width: 60px; height: 60px;
-      background: radial-gradient(circle at 50% 50%, rgba(200,200,200,0.7), rgba(200,200,200,0));
-      opacity: 0;
-      transform: translateX(-50%) scale(0.5);
-      animation: puff 1.5s ease-out forwards;
-    }
-    .suitcase-container.smoke-active .smoke span:nth-child(1) { left: 20%; animation-delay: 0s; }
-    .suitcase-container.smoke-active .smoke span:nth-child(2) { left: 40%; animation-delay: 0.2s; }
-    .suitcase-container.smoke-active .smoke span:nth-child(3) { left: 60%; animation-delay: 0.4s; }
-    .suitcase-container.smoke-active .smoke span:nth-child(4) { left: 80%; animation-delay: 0.6s; }
-    @keyframes puff {
-      0% { opacity: 0.8; transform: translateX(-50%) translateY(0) scale(0.5); }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-200px) scale(2); }
     }
 
     #medal {
@@ -78,9 +53,6 @@
     .suitcase-container.revealed #suitcase {
       opacity: 0;
       transform: scale(1.2);
-    }
-    .suitcase-container.revealed .smoke span {
-      animation-play-state: running;
     }
     .suitcase-container.revealed #medal {
       opacity: 1;
@@ -97,44 +69,45 @@
   </style></head>
 <body>  <h2 id="headline">Кажется в чемодане, с которым вы ездили в Москву, что-то появилось! Нажмите на него, чтобы узнать, что это!</h2>  <div class="suitcase-container" id="box">
     <img src="suitcase.png" id="suitcase" alt="Чемодан">
-    <div class="smoke">
-      <span></span><span></span><span></span><span></span>
-    </div>
     <img src="medal.png" id="medal" alt="Медаль">
   </div>  <script>
     const box = document.getElementById('box');
+    const suitcase = document.getElementById('suitcase');
     const medal = document.getElementById('medal');
     const headline = document.getElementById('headline');
     let musicStarted = false;
 
-    // Synths для звука аплодисментов
-    const clapSynth = new Tone.NoiseSynth({ noise:{type:'white'}, envelope:{attack:0.005, decay:0.3, sustain:0} }).toDestination();
+    // Synth для аплодисментов
+    const clapSynth = new Tone.NoiseSynth({
+      noise: { type: 'white' },
+      envelope: { attack: 0.005, decay: 0.3, sustain: 0 }
+    }).toDestination();
 
     box.addEventListener('click', async () => {
       if (!musicStarted) {
         await Tone.start();
         musicStarted = true;
       }
+      // Shake
       box.classList.add('shake');
+      // Initial confetti on shake
+      confetti({ particleCount: 100, spread: 60 });
       setTimeout(() => box.classList.remove('shake'), 400);
-      // активировать дым
-      box.classList.add('smoke-active');
-      // показать медаль и спрятать сумку + заголовок
+      // Reveal medal
       setTimeout(() => {
         box.classList.add('revealed');
         headline.classList.add('hidden');
-      }, 1000);
+        // Confetti on medal appearance
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.4 } });
+      }, 600);
     });
 
     medal.addEventListener('click', e => {
       e.stopPropagation();
-      // несколько хлопков подряд
+      // Applause
       const now = Tone.now();
-      [0, 0.1, 0.3, 0.5, 0.7].forEach(delay => {
-        clapSynth.triggerAttackRelease('16n', now + delay);
-      });
-      confetti({ particleCount: 150, spread: 80, origin:{ y:0.4 } });
-      // перенаправление
+      [0, 0.1, 0.3].forEach(offset => clapSynth.triggerAttackRelease('16n', now + offset));
+      // Redirect
       setTimeout(() => window.location.href = 'https://my.walk-walk.ru/', 800);
     });
   </script></body>
