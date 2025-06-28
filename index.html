@@ -1,15 +1,11 @@
 <!DOCTYPE html><html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Сюрприз с медалью</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <!-- Tone.js для синтеза музыки -->
-  <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>
-  <!-- Canvas Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Сюрприз с медалью 🏅</title>  <!-- Tone.js для синтеза музыки -->  <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>  <!-- Canvas Confetti -->  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>  <style>
     body {
-      margin: 0; padding: 2rem;
+      margin: 0;
+      padding: 2rem;
       background: #fafafa;
       font-family: sans-serif;
       text-align: center;
@@ -17,97 +13,110 @@
     h2 {
       margin-bottom: 1.5rem;
       color: #333;
-    }.suitcase-container {
-  position: relative;
-  width: 300px;
-  margin: 0 auto;
-  cursor: pointer;
-  overflow: hidden;
-}
-#suitcase {
-  width: 100%;
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.suitcase-container.shake #suitcase {
-  animation: shake 0.4s;
-}
-@keyframes shake {
-  0%,100% { transform: translateX(0) rotate(0); }
-  25% { transform: translateX(4px) rotate(2deg); }
-  50% { transform: translateX(-4px) rotate(-2deg); }
-  75% { transform: translateX(4px) rotate(1deg); }
-}
+      transition: opacity 0.4s;
+    }
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-.smoke {
-  position: absolute;
-  bottom: 0; left: 50%;
-  width: 400px; height: 200px;
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-.smoke span {
-  position: absolute;
-  bottom: 0;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 0, 0, 0.7);
-  opacity: 0;
-  transform: scale(0);
-  animation: smokeAnim 1s ease-out forwards;
-  animation-play-state: paused;
-}
-.smoke span:nth-child(1) { left: 10%; animation-delay: 0s; }
-.smoke span:nth-child(2) { left: 25%; animation-delay: 0.1s; }
-.smoke span:nth-child(3) { left: 40%; animation-delay: 0.2s; }
-.smoke span:nth-child(4) { left: 55%; animation-delay: 0.3s; }
-.smoke span:nth-child(5) { left: 70%; animation-delay: 0.4s; }
-.smoke span:nth-child(6) { left: 85%; animation-delay: 0.5s; }
-@keyframes smokeAnim {
-  0% {
-    opacity: 0.7;
-    transform: translateY(0) scale(0.5);
-    filter: blur(2px);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-200px) scale(3);
-    filter: blur(10px);
-  }
-}
+    .suitcase-container {
+      position: relative;
+      width: 300px;
+      margin: 0 auto;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    #suitcase {
+      width: 100%;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .suitcase-container.shake #suitcase {
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0) rotate(0); }
+      25% { transform: translateX(4px) rotate(2deg); }
+      50% { transform: translateX(-4px) rotate(-2deg); }
+      75% { transform: translateX(4px) rotate(1deg); }
+    }
 
-#medal {
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 120px; height: 120px;
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: opacity 0.6s ease 1.2s, transform 0.6s ease 1.2s;
-  cursor: pointer;
-}
+    .smoke {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 400px;
+      height: 200px;
+      transform: translateX(-50%);
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .suitcase-container.revealed .smoke {
+      visibility: visible;
+    }
+    .smoke span {
+      position: absolute;
+      bottom: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 0, 0, 0.7);
+      opacity: 0;
+      transform: scale(0);
+      animation: smokeAnim 1s ease-out forwards;
+      animation-play-state: paused;
+    }
+    .smoke span:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .smoke span:nth-child(2) { left: 25%; animation-delay: 0.1s; }
+    .smoke span:nth-child(3) { left: 40%; animation-delay: 0.2s; }
+    .smoke span:nth-child(4) { left: 55%; animation-delay: 0.3s; }
+    .smoke span:nth-child(5) { left: 70%; animation-delay: 0.4s; }
+    .smoke span:nth-child(6) { left: 85%; animation-delay: 0.5s; }
+    @keyframes smokeAnim {
+      0% {
+        opacity: 0.7;
+        transform: translateY(0) scale(0.5);
+        filter: blur(2px);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-200px) scale(3);
+        filter: blur(10px);
+      }
+    }
 
-.suitcase-container.revealed #suitcase {
-  opacity: 0;
-  transform: scale(1.2);
-}
-.suitcase-container.revealed .smoke span {
-  animation-play-state: running;
-}
-.suitcase-container.revealed #medal {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-  animation: pulse 2s infinite, spin 4s linear infinite;
-}
-@keyframes pulse {
-  0%,100% { transform: translate(-50%,-50%) scale(1); }
-  50%     { transform: translate(-50%,-50%) scale(1.1); }
-}
-@keyframes spin {
-  to { transform: translate(-50%,-50%) rotate(360deg) scale(1); }
-}
-
-  </style>
-</head>
-<body>  <h2>Кажется в вашем чемодане что-то появилось! Нажмите на него, чтобы посмотреть, что это!</h2>  <div class="suitcase-container" id="box">
+    #medal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      transition: opacity 0.6s ease 1s, transform 0.6s ease 1s;
+      cursor: pointer;
+    }
+    .suitcase-container.revealed #suitcase {
+      opacity: 0;
+      transform: scale(1.2);
+    }
+    .suitcase-container.revealed .smoke span {
+      animation-play-state: running;
+    }
+    .suitcase-container.revealed #medal {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      animation: pulse 2s infinite, spin 4s linear infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: translate(-50%,-50%) scale(1); }
+      50%     { transform: translate(-50%,-50%) scale(1.1); }
+    }
+    @keyframes spin {
+      to { transform: translate(-50%,-50%) rotate(360deg) scale(1); }
+    }
+  </style></head>
+<body>  <h2 id="headline">Кажется в вашем чемодане что-то появилось! Нажмите на него, чтобы посмотреть, что это!</h2>  <div class="suitcase-container" id="box">
     <img src="suitcase.png" id="suitcase" alt="Чемодан">
     <div class="smoke">
       <span></span><span></span><span></span><span></span><span></span><span></span>
@@ -116,16 +125,27 @@
   </div>  <script>
     const box = document.getElementById('box');
     const medal = document.getElementById('medal');
+    const headline = document.getElementById('headline');
     let musicStarted = false;
 
-    const arp = new Tone.PolySynth(Tone.Synth, { oscillator:{type:'triangle'}, envelope:{attack:0.1,decay:0.1,sustain:0.5,release:1} }).toDestination();
-    const fanfare = new Tone.PolySynth(Tone.Synth, { oscillator:{type:'square'}, envelope:{attack:0.01,decay:0.2,sustain:0.3,release:1.5} }).toDestination();
+    // Синтезаторы Tone.js
+    const arp = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'triangle' },
+      envelope: { attack: 0.1, decay: 0.1, sustain: 0.5, release: 1 }
+    }).toDestination();
+
+    const clap = new Tone.NoiseSynth({
+      noise: { type: 'white' },
+      envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
+    }).toDestination();
 
     async function startMusic() {
       await Tone.start();
       const chord = ['C4','E4','G4','B4'];
       Tone.Transport.scheduleRepeat(time => {
-        chord.forEach((note,i) => arp.triggerAttackRelease(note,'8n',time + i*0.25));
+        chord.forEach((note, i) => {
+          arp.triggerAttackRelease(note, '8n', time + i * 0.25);
+        });
       }, '2n');
       Tone.Transport.bpm.value = 90;
       Tone.Transport.start();
@@ -136,14 +156,17 @@
       box.classList.add('shake');
       setTimeout(() => box.classList.remove('shake'), 400);
       setTimeout(() => box.classList.add('revealed'), 600);
+      setTimeout(() => headline.classList.add('hidden'), 600);
       setTimeout(() => Tone.Transport.stop(), 1200);
     });
 
     medal.addEventListener('click', e => {
       e.stopPropagation();
-      fanfare.triggerAttackRelease(['C5','E5','G5','C6'],'2n');
-      confetti({particleCount:150, spread:80, origin:{y:0.4}});
-      alert('👏 Поздравляем с медалью!');
+      clap.triggerAttackRelease('16n');
+      confetti({ particleCount: 150, spread: 80, origin: { y: 0.4 } });
+      headline.textContent = 'Поздравляем! Вы получили медаль! 🎉';
+      headline.classList.remove('hidden');
+      setTimeout(() => window.location.href = 'https://my.walk-walk.ru/', 1500);
     });
   </script></body>
 </html>
