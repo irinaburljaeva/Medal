@@ -120,13 +120,10 @@
 
     medal.addEventListener('click', e => {
       e.stopPropagation();
-      // Stop people sound
+      // Останавливаем звук людей
       peopleSound.pause();
       peopleSound.currentTime = 0;
-      // Applause only
-      const t3 = Tone.now();
-      [0, 0.1, 0.3].forEach(offset => clapSynth.triggerAttackRelease('16n', t3 + offset));
-      // Redirect
+      // Переход на сайт
       setTimeout(() => window.location.href = 'https://my.walk-walk.ru/', 800);
     });
   </script></body>
