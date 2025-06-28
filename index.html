@@ -86,25 +86,33 @@
       envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
     }).toDestination();
 
+    // Synth для аплодисментов
+    const clapSynth = new Tone.NoiseSynth({
+      noise: { type: 'white' },
+      envelope: { attack: 0.005, decay: 0.3, sustain: 0 }
+    }).toDestination();
+
     box.addEventListener('click', async () => {
       if (!musicStarted) {
         await Tone.start();
         musicStarted = true;
+        // Запуск звука людей прямо по жесту
+        peopleSound.currentTime = 0;
+        peopleSound.play();
       }
       // Shake
       box.classList.add('shake');
-      // Confetti and pops on shake
+      // Pop sounds and confetti on shake
       const now = Tone.now();
       [0, 0.1, 0.2].forEach(offset => popSynth.triggerAttackRelease('16n', now + offset));
       confetti({ particleCount: 100, spread: 60 });
       setTimeout(() => box.classList.remove('shake'), 400);
 
-      // Reveal medal and play people sound
+      // Reveal medal
       setTimeout(() => {
         box.classList.add('revealed');
         headline.classList.add('hidden');
-        peopleSound.play();
-        // Confetti and pops on reveal
+        // Pop and confetti on reveal
         const t2 = Tone.now();
         [0, 0.1, 0.2, 0.3].forEach(offset => popSynth.triggerAttackRelease('16n', t2 + offset));
         confetti({ particleCount: 150, spread: 80, origin: { y: 0.4 } });
@@ -116,8 +124,11 @@
       // Остановить звук людей
       peopleSound.pause();
       peopleSound.currentTime = 0;
+      // Applause
+      const t3 = Tone.now();
+      [0, 0.1, 0.3].forEach(offset => clapSynth.triggerAttackRelease('16n', t3 + offset));
       // Redirect
-      setTimeout(() => window.location.href = 'https://my.walk-walk.ru/', 200);
+      setTimeout(() => window.location.href = 'https://my.walk-walk.ru/', 800);
     });
   </script></body>
 </html>
