@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Сюрприз с медалью 🏅</title>  <!-- Tone.js для синтеза музыки -->  <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>  <!-- Canvas Confetti -->  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>  <style>
+  <title>Сюрприз с медалью 🏅</title>  <!-- Tone.js для синтеза звука -->  <script src="https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.min.js"></script>  <!-- Canvas Confetti -->  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>  <style>
     body {
       margin: 0;
       padding: 2rem;
@@ -77,6 +77,12 @@
     const headline = document.getElementById('headline');
     let musicStarted = false;
 
+    // Synth для звука хлопушек (pop)
+    const popSynth = new Tone.NoiseSynth({
+      noise: { type: 'white' },
+      envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
+    }).toDestination();
+
     // Synth для аплодисментов
     const clapSynth = new Tone.NoiseSynth({
       noise: { type: 'white' },
@@ -88,26 +94,32 @@
         await Tone.start();
         musicStarted = true;
       }
-      // Shake
+      // Тряска чемодана
       box.classList.add('shake');
-      // Initial confetti on shake
-      confetti({ particleCount: 100, spread: 60 });
       setTimeout(() => box.classList.remove('shake'), 400);
-      // Reveal medal
+
+      // Поп-звуки и конфетти при тряске
+      const now = Tone.now();
+      [0, 0.1, 0.2].forEach(offset => popSynth.triggerAttackRelease('16n', now + offset));
+      confetti({ particleCount: 80, spread: 60 });
+
+      // Показ медали
       setTimeout(() => {
         box.classList.add('revealed');
         headline.classList.add('hidden');
-        // Confetti on medal appearance
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.4 } });
+        // Второй конфетти и дополнительный pop
+        const t2 = Tone.now();
+        [0, 0.1, 0.2, 0.3].forEach(offset => popSynth.triggerAttackRelease('16n', t2 + offset));
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.4 } });
       }, 600);
     });
 
     medal.addEventListener('click', e => {
       e.stopPropagation();
-      // Applause
-      const now = Tone.now();
-      [0, 0.1, 0.3].forEach(offset => clapSynth.triggerAttackRelease('16n', now + offset));
-      // Redirect
+      // Аплодисменты
+      const t3 = Tone.now();
+      [0, 0.1, 0.3].forEach(offset => clapSynth.triggerAttackRelease('16n', t3 + offset));
+      // Перенаправление
       setTimeout(() => window.location.href = 'https://my.walk-walk.ru/', 800);
     });
   </script></body>
