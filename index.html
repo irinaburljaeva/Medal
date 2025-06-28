@@ -80,7 +80,7 @@
     const peopleSound = document.getElementById('peopleSound');
     let musicStarted = false;
 
-    // Synth для звука хлопушек
+    // Synth для звука хлопков при тряске
     const popSynth = new Tone.NoiseSynth({
       noise: { type: 'white' },
       envelope: { attack: 0.001, decay: 0.2, sustain: 0 }
@@ -96,13 +96,12 @@
       if (!musicStarted) {
         await Tone.start();
         musicStarted = true;
-        // Запуск звука людей прямо по жесту
         peopleSound.currentTime = 0;
         peopleSound.play();
       }
-      // Shake
+      // Shake animation
       box.classList.add('shake');
-      // Pop sounds and confetti on shake
+      // Pops and confetti on shake
       const now = Tone.now();
       [0, 0.1, 0.2].forEach(offset => popSynth.triggerAttackRelease('16n', now + offset));
       confetti({ particleCount: 100, spread: 60 });
@@ -112,7 +111,7 @@
       setTimeout(() => {
         box.classList.add('revealed');
         headline.classList.add('hidden');
-        // Pop and confetti on reveal
+        // Additional pops and confetti
         const t2 = Tone.now();
         [0, 0.1, 0.2, 0.3].forEach(offset => popSynth.triggerAttackRelease('16n', t2 + offset));
         confetti({ particleCount: 150, spread: 80, origin: { y: 0.4 } });
@@ -121,10 +120,10 @@
 
     medal.addEventListener('click', e => {
       e.stopPropagation();
-      // Остановить звук людей
+      // Stop people sound
       peopleSound.pause();
       peopleSound.currentTime = 0;
-      // Applause
+      // Applause only
       const t3 = Tone.now();
       [0, 0.1, 0.3].forEach(offset => clapSynth.triggerAttackRelease('16n', t3 + offset));
       // Redirect
