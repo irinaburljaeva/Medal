@@ -8,80 +8,79 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <style>
     body {
-      margin:0; padding:2rem;
-      background:#fafafa;
-      font-family:sans-serif;
-      text-align:center;
+      margin: 0; padding: 2rem;
+      background: #fafafa;
+      display: flex; flex-direction: column; align-items: center;
+      font-family: sans-serif; text-align: center;
     }
-    h2 { margin-bottom:1.5rem; }
+    h2 { margin-bottom: 1.5rem; color: #333; }
 
     .suitcase-container {
       position: relative;
-      width: 300px;
-      margin: 0 auto;
+      width: 300px; height: 200px;
       perspective: 800px;
       cursor: pointer;
     }
-
-    /* Нижняя часть чемодана */
-    .suitcase-base,
-    /* Верхняя часть (крышка) */
-    .suitcase-lid {
-      position:absolute; left:0; top:0;
-      width:100%; height:auto;
-      transition: opacity .4s ease, transform .8s ease;
+    /* чемодан */
+    #suitcase {
+      width: 100%; transform-origin: center bottom;
+      transition: transform 0.4s ease;
     }
-
-    /* Листаем одно и то же изображение, но обрезанное */
-    .suitcase-base img {
-      width:100%;
-      clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
-    }
-    .suitcase-lid img {
-      width:100%;
-      clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
-      transform-origin: 50% 40%;
-    }
-
-    /* Тряска крышки */
-    .shake .suitcase-lid {
+    /* тряска */
+    .shake #suitcase {
       animation: shake 0.4s;
     }
     @keyframes shake {
-      0%,100% { transform: rotateX(0deg); }
-      25%      { transform: rotateX(-5deg); }
-      50%      { transform: rotateX(3deg); }
-      75%      { transform: rotateX(-3deg); }
+      0%,100% { transform: translateX(0) rotate(0deg); }
+      25%      { transform: translateX(4px) rotate(2deg); }
+      50%      { transform: translateX(-4px) rotate(-2deg); }
+      75%      { transform: translateX(4px) rotate(1deg); }
     }
 
-    /* Открытие крышки */
-    .opened .suitcase-lid {
-      transform: rotateX(-110deg);
+    /* дым */
+    .smoke {
+      position: absolute; left: 50%; bottom: 10px;
+      width: 0; height: 0; pointer-events: none;
     }
-
-    /* Медаль */
-    .medal {
-      position:absolute;
-      top:45%; left:50%;
-      width:120px; height:120px;
-      transform: translate(-50%,-50%) scale(0);
+    .smoke span {
+      position: absolute; bottom: 0;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: rgba(200,200,200,0.7);
+      transform: translateX(-50%) scale(0);
       opacity: 0;
-      transition: opacity .6s ease .8s,
-                  transform .6s ease .8s;
+      animation: smokeAnim 1s ease-out forwards;
+    }
+    .smoke span:nth-child(1){ left:10%; animation-delay:0s; }
+    .smoke span:nth-child(2){ left:30%; animation-delay:0.1s; }
+    .smoke span:nth-child(3){ left:50%; animation-delay:0.2s; }
+    .smoke span:nth-child(4){ left:70%; animation-delay:0.3s; }
+    .smoke span:nth-child(5){ left:90%; animation-delay:0.4s; }
+    @keyframes smokeAnim {
+      0%   { transform: translateX(-50%) scale(0.5); opacity: 0.6; filter: blur(2px); }
+      100% { transform: translateX(-50%) translateY(-150px) scale(1.5); opacity: 0; filter: blur(10px); }
+    }
+
+    /* медаль */
+    #medal {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 120px; height: 120px;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      transition: transform 0.6s ease 1.2s, opacity 0.6s ease 1.2s;
       cursor: pointer;
     }
 
-    /* Скрываем чемодан, показываем медаль */
-    .revealed .suitcase-base,
-    .revealed .suitcase-lid {
-      opacity: 0;
+    .revealed .smoke,
+    .revealed #suitcase {
+      opacity: 0; transition: opacity 0.4s ease;
     }
-    .revealed .medal {
+    .revealed #medal {
       opacity: 1;
-      transform: translate(-50%,-50%) scale(1);
+      transform: translate(-50%, -50%) scale(1);
       animation: pulse 2s infinite, spin 4s linear infinite;
     }
-
     @keyframes pulse {
       0%,100% { transform: translate(-50%,-50%) scale(1); }
       50%     { transform: translate(-50%,-50%) scale(1.1); }
@@ -96,24 +95,28 @@
   <h2>Кликни по чемодану, чтобы увидеть медаль!</h2>
 
   <div class="suitcase-container" id="box">
-    <div class="suitcase-base">
-      <img src="suitcase.png" alt="Основание чемодана">
+    <img src="suitcase.png" id="suitcase" alt="Чемодан">
+    <div class="smoke">
+      <span></span><span></span><span></span><span></span><span></span>
     </div>
-    <div class="suitcase-lid">
-      <img src="suitcase.png" alt="Крышка чемодана">
-    </div>
-    <img src="medal.png" class="medal" alt="Медаль">
+    <img src="medal.png" id="medal" alt="Медаль">
   </div>
 
   <script>
     const box = document.getElementById('box');
-    const medal = box.querySelector('.medal');
+    const suitcase = document.getElementById('suitcase');
+    const medal = document.getElementById('medal');
 
     box.addEventListener('click', () => {
+      // тряска
       box.classList.add('shake');
       setTimeout(() => box.classList.remove('shake'), 400);
-      setTimeout(() => box.classList.add('opened'), 400);
-      setTimeout(() => box.classList.add('revealed'), 800);
+      // дым
+      box.querySelectorAll('.smoke span').forEach(el => {
+        el.style.animationPlayState = 'running';
+      });
+      // показать медаль
+      setTimeout(() => box.classList.add('revealed'), 1200);
     });
 
     medal.addEventListener('click', e => {
