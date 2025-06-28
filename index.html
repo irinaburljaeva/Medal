@@ -2,80 +2,92 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Сюрприз с медалью 🏅</title>
+  <title>Сюрприз с медалью</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <style>
     body {
-      margin: 0;
-      padding: 2rem;
-      background: #fafafa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-family: sans-serif;
-      text-align: center;
+      margin:0; padding:2rem;
+      background:#fafafa;
+      font-family:sans-serif;
+      text-align:center;
     }
-    h2 {
-      margin-bottom: 1.5rem;
-    }
+    h2 { margin-bottom:1.5rem; }
+
     .suitcase-container {
       position: relative;
       width: 300px;
+      margin: 0 auto;
       perspective: 800px;
       cursor: pointer;
     }
-    .suitcase-base, .suitcase-lid {
-      width: 100%;
-      display: block;
-      transition: opacity 0.4s ease, transform 0.8s ease;
-    }
+
+    /* Нижняя часть чемодана */
+    .suitcase-base,
+    /* Верхняя часть (крышка) */
     .suitcase-lid {
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform-origin: 50% 100%;
-    }
-    .suitcase-container.shake .suitcase-lid {
-      animation: shake 0.4s;
-    }
-    .suitcase-container.opened .suitcase-lid {
-      transform: rotateX(-110deg);
-    }
-    @keyframes shake {
-      0%,100% { transform: translate(0,0) rotateX(0); }
-      25% { transform: translate(3px,-2px) rotateX(-5deg); }
-      50% { transform: translate(-3px,2px) rotateX(3deg); }
-      75% { transform: translate(2px,-3px) rotateX(-3deg); }
+      position:absolute; left:0; top:0;
+      width:100%; height:auto;
+      transition: opacity .4s ease, transform .8s ease;
     }
 
+    /* Листаем одно и то же изображение, но обрезанное */
+    .suitcase-base img {
+      width:100%;
+      clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
+    }
+    .suitcase-lid img {
+      width:100%;
+      clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+      transform-origin: 50% 40%;
+    }
+
+    /* Тряска крышки */
+    .shake .suitcase-lid {
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0%,100% { transform: rotateX(0deg); }
+      25%      { transform: rotateX(-5deg); }
+      50%      { transform: rotateX(3deg); }
+      75%      { transform: rotateX(-3deg); }
+    }
+
+    /* Открытие крышки */
+    .opened .suitcase-lid {
+      transform: rotateX(-110deg);
+    }
+
+    /* Медаль */
     .medal {
-      position: absolute;
-      top: 40%;
-      left: 50%;
-      width: 120px;
-      transform: translate(-50%, -50%) scale(0);
+      position:absolute;
+      top:45%; left:50%;
+      width:120px; height:120px;
+      transform: translate(-50%,-50%) scale(0);
       opacity: 0;
-      transition: opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s;
+      transition: opacity .6s ease .8s,
+                  transform .6s ease .8s;
       cursor: pointer;
     }
-    .suitcase-container.revealed .suitcase-base,
-    .suitcase-container.revealed .suitcase-lid {
+
+    /* Скрываем чемодан, показываем медаль */
+    .revealed .suitcase-base,
+    .revealed .suitcase-lid {
       opacity: 0;
     }
-    .suitcase-container.revealed .medal {
+    .revealed .medal {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: translate(-50%,-50%) scale(1);
       animation: pulse 2s infinite, spin 4s linear infinite;
     }
+
     @keyframes pulse {
-      0%,100% { transform: translate(-50%, -50%) scale(1); }
-      50% { transform: translate(-50%, -50%) scale(1.1); }
+      0%,100% { transform: translate(-50%,-50%) scale(1); }
+      50%     { transform: translate(-50%,-50%) scale(1.1); }
     }
     @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
-      100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+      to { transform: translate(-50%,-50%) rotate(360deg) scale(1); }
     }
   </style>
 </head>
@@ -83,35 +95,31 @@
 
   <h2>Кликни по чемодану, чтобы увидеть медаль!</h2>
 
-  <div class="suitcase-container" id="suitcase">
-    <img src="suitcase-base.png" class="suitcase-base" alt="Основание чемодана">
-    <img src="suitcase-lid.png"  class="suitcase-lid"  alt="Крышка чемодана">
-    <img src="medal.png"         class="medal"         alt="Медаль">
+  <div class="suitcase-container" id="box">
+    <div class="suitcase-base">
+      <img src="suitcase.png" alt="Основание чемодана">
+    </div>
+    <div class="suitcase-lid">
+      <img src="suitcase.png" alt="Крышка чемодана">
+    </div>
+    <img src="medal.png" class="medal" alt="Медаль">
   </div>
 
   <script>
-    const box = document.getElementById('suitcase');
+    const box = document.getElementById('box');
+    const medal = box.querySelector('.medal');
 
     box.addEventListener('click', () => {
-      // тряска + открытие
       box.classList.add('shake');
-      setTimeout(() => {
-        box.classList.remove('shake');
-        box.classList.add('opened');
-      }, 400);
-
-      // скрываем чемодан и показываем медаль
-      setTimeout(() => {
-        box.classList.add('revealed');
-      }, 800);
+      setTimeout(() => box.classList.remove('shake'), 400);
+      setTimeout(() => box.classList.add('opened'), 400);
+      setTimeout(() => box.classList.add('revealed'), 800);
     });
 
-    // Конфетти и тост по клику на медаль
-    const medal = document.querySelector('.medal');
-    medal.addEventListener('click', (e) => {
+    medal.addEventListener('click', e => {
       e.stopPropagation();
       confetti({ particleCount: 150, spread: 80, origin: { y: 0.4 } });
-      alert('Поздравляем! Прими эту медаль с любовью ❤️');
+      alert('👏 Поздравляем с медалью!');
     });
   </script>
 
