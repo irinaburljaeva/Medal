@@ -941,28 +941,42 @@ function calcScore(player) {
 
 function updateScoreUI() {
   const s1 = calcScore(1), s2 = calcScore(2);
-  const hasSteps = (s1.steps + s2.steps) > 0;
-  const v1 = hasSteps ? s1.steps : s1.mins;
-  const v2 = hasSteps ? s2.steps : s2.mins;
-  const unit = hasSteps ? 'шагов' : 'мин';
-  const total = v1 + v2;
+  
+  // Показываем шаги если они есть, иначе минуты
+  // Но каждый игрок показывается в своих единицах
+  const hasAnySteps = (s1.steps + s2.steps) > 0;
+  const hasAnyMins = (s1.mins + s2.mins) > 0;
+  
+  // Переводим минуты в "шаго-эквивалент" для сравнения (1 мин = 100 шагов)
+  // или просто суммируем шаги + минуты*100 для рейтинга
+  const score1 = s1.steps + s1.mins * 100;
+  const score2 = s2.steps + s2.mins * 100;
+  
+  // Отображаем шаги и минуты отдельно
+  const display1 = hasAnySteps ? s1.steps : s1.mins;
+  const display2 = hasAnySteps ? s2.steps : s2.mins;
+  const unit = hasAnySteps ? 'шагов' : 'мин';
+  
+  // Для прогресс-бара используем суммарный счёт
+  const total = score1 + score2;
 
-  document.getElementById('score-v1').textContent = v1.toLocaleString('ru');
-  document.getElementById('score-v2').textContent = v2.toLocaleString('ru');
+  document.getElementById('score-v1').textContent = display1.toLocaleString('ru');
+  document.getElementById('score-v2').textContent = display2.toLocaleString('ru');
   document.getElementById('score-u1').textContent = unit;
   document.getElementById('score-u2').textContent = unit;
 
-  const pct1 = total > 0 ? Math.round(v1/total*100) : 50;
+  const pct1 = total > 0 ? Math.round(score1/total*100) : 50;
   const pct2 = 100 - pct1;
   document.getElementById('bar-p1').style.width = pct1 + '%';
   document.getElementById('bar-p2').style.width = pct2 + '%';
 
   const la = document.getElementById('leader-area');
-  if (v1 > v2) la.innerHTML = '<span class="leader-badge p1">🥊 Ирина ведёт!</span>';
-  else if (v2 > v1) la.innerHTML = '<span class="leader-badge p2">🥊 Настя ведёт!</span>';
+  if (score1 > score2) la.innerHTML = '<span class="leader-badge p1">🥊 Ирина ведёт!</span>';
+  else if (score2 > score1) la.innerHTML = '<span class="leader-badge p2">🥊 Настя ведёт!</span>';
   else if (total > 0) la.innerHTML = '<span class="leader-badge tie">🤝 Полная ничья!</span>';
   else la.innerHTML = '';
 }
+
 
 function renderLog() {
   const el = document.getElementById('log-list');
